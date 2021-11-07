@@ -1,5 +1,6 @@
 package org.kozlowski.recipeapp.bootstrap;
 
+import lombok.extern.slf4j.Slf4j;
 import org.kozlowski.recipeapp.domain.*;
 import org.kozlowski.recipeapp.repositories.CategoryRepository;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -30,7 +32,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+
         recipeRepository.saveAll(getRecipes());
+        log.debug("Loading Bootstrap Data");
 
     }
 
