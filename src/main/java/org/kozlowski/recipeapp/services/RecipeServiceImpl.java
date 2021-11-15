@@ -1,6 +1,9 @@
 package org.kozlowski.recipeapp.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.kozlowski.recipeapp.commands.RecipeCommand;
+import org.kozlowski.recipeapp.converters.RecipeCommandToRecipe;
+import org.kozlowski.recipeapp.converters.RecipeToRecipeCommand;
 import org.kozlowski.recipeapp.domain.Recipe;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
 import org.springframework.stereotype.Service;
@@ -13,9 +16,13 @@ import java.util.Set;
 @Service
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
+    private final RecipeToRecipeCommand recipeToRecipeCommand;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe, RecipeToRecipeCommand recipeToRecipeCommand) {
         this.recipeRepository = recipeRepository;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
+        this.recipeToRecipeCommand = recipeToRecipeCommand;
     }
 
     @Override
@@ -36,6 +43,18 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return recipeOptional.get();
+    }
+
+    @Override
+    public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+        Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
+
+        Recipe savedRecipe = recipeRepository.save(detachedRecipe);
+
+        log.debug("Saved RecipeId: "+savedRecipe.getId());
+
+        return  recipeToRecipeCommand.convert(savedRecipe);
+
     }
 
 
