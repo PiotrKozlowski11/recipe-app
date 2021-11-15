@@ -2,6 +2,8 @@ package org.kozlowski.recipeapp.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kozlowski.recipeapp.converters.RecipeCommandToRecipe;
+import org.kozlowski.recipeapp.converters.RecipeToRecipeCommand;
 import org.kozlowski.recipeapp.domain.Recipe;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
 import org.mockito.Mock;
@@ -22,15 +24,22 @@ class RecipeServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
+    RecipeToRecipeCommand recipeToRecipeCommand;
+
+    @Mock
+    RecipeCommandToRecipe recipeCommandToRecipe;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        recipeService = new RecipeServiceImpl(recipeRepository);
+        //recipeService = new RecipeServiceImpl(recipeRepository, converter, recipeToRecipeCommand);
+        recipeService = new RecipeServiceImpl(recipeRepository, recipeCommandToRecipe, recipeToRecipeCommand);
     }
 
     @Test
-    void findByIdTest() {
+    void findById() {
         Recipe recipe = new Recipe();
         recipe.setId(1L);
         Optional<Recipe> recipeOptional = Optional.of(recipe);
@@ -61,5 +70,11 @@ class RecipeServiceImplTest {
 
         assertEquals(recipes.size(), 1);
         verify(recipeRepository, times(1)).findAll();
+        verify(recipeRepository, never()).findById(anyLong());
+    }
+
+
+    @Test
+    void saveRecipeCommand() {
     }
 }
