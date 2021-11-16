@@ -8,6 +8,7 @@ import org.kozlowski.recipeapp.domain.Recipe;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -46,6 +47,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public RecipeCommand saveRecipeCommand(RecipeCommand command) {
         Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
 
@@ -55,6 +57,18 @@ public class RecipeServiceImpl implements RecipeService {
 
         return  recipeToRecipeCommand.convert(savedRecipe);
 
+    }
+
+    @Override
+    @Transactional
+    public RecipeCommand findCommandById(Long id) {
+
+        return recipeToRecipeCommand.convert(findById(id));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        recipeRepository.deleteById(id);
     }
 
 
