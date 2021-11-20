@@ -3,6 +3,7 @@ package org.kozlowski.recipeapp.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.kozlowski.recipeapp.commands.IngredientCommand;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
+import org.kozlowski.recipeapp.commands.UnitOfMeasureCommand;
 import org.kozlowski.recipeapp.domain.UnitOfMeasure;
 import org.kozlowski.recipeapp.services.IngredientService;
 import org.kozlowski.recipeapp.services.RecipeService;
@@ -37,7 +38,7 @@ public class IngredientController {
         return "recipe/ingredient/list";
     }
 
-    @RequestMapping("recipe/{recipeId}/ingredient/{id}/show")
+    @RequestMapping("/recipe/{recipeId}/ingredient/{id}/show")
     public String showRecipeIngredient(@PathVariable String recipeId,
                                        @PathVariable String id,
                                        Model model){
@@ -48,10 +49,28 @@ public class IngredientController {
         return "recipe/ingredient/show";
     }
 
+    @RequestMapping("/recipe/{recipeId}/ingredient/new")
+    public String newIngredient(@PathVariable String recipeId,
+                            Model model){
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(recipeId));
+        //todo raise exception if null
+
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(recipeCommand.getId());
+
+
+        model.addAttribute("ingredient",ingredientCommand);
+        ingredientCommand.setUnitOfMeasure(new UnitOfMeasureCommand());
+
+        model.addAttribute("uomList",unitOfMeasureService.findAll());
+
+        return "recipe/ingredient/ingredientform";
+    }
+
     @RequestMapping("/recipe/{recipeId}/ingredient/{id}/update")
-    public String updateRecipe(@PathVariable String recipeId,
-                               @PathVariable String id,
-                               Model model){
+    public String updateIngredient(@PathVariable String recipeId,
+                                   @PathVariable String id,
+                                   Model model){
         model.addAttribute("ingredient",ingredientService.findByRecipeIdAndIngredientId(
                 Long.valueOf(recipeId),Long.valueOf(id)));
 
