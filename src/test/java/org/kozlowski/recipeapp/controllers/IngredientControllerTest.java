@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kozlowski.recipeapp.commands.IngredientCommand;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
-import org.kozlowski.recipeapp.domain.Ingredient;
 import org.kozlowski.recipeapp.services.IngredientService;
 import org.kozlowski.recipeapp.services.RecipeService;
 import org.kozlowski.recipeapp.services.UnitOfMeasureService;
@@ -118,7 +117,19 @@ class IngredientControllerTest {
         mockMvc.perform(get("/recipe/2/ingredient/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/ingredient/ingredientform"))
-                .andExpect(model().attributeExists("ingredient","uomList"));
+                .andExpect(model().attributeExists("ingredient", "uomList"));
+
+    }
+
+    @Test
+    void deleteIngredientById() throws Exception {
+
+        mockMvc.perform(get("/recipe/2/ingredient/3/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/recipe/2/ingredients/"));
+
+        verify(ingredientService, times(1)).deleteById(anyLong(), anyLong());
+
 
     }
 }

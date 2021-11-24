@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.kozlowski.recipeapp.commands.IngredientCommand;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
 import org.kozlowski.recipeapp.commands.UnitOfMeasureCommand;
-import org.kozlowski.recipeapp.domain.UnitOfMeasure;
 import org.kozlowski.recipeapp.services.IngredientService;
 import org.kozlowski.recipeapp.services.RecipeService;
 import org.kozlowski.recipeapp.services.UnitOfMeasureService;
@@ -70,13 +69,24 @@ public class IngredientController {
     @RequestMapping("/recipe/{recipeId}/ingredient/{id}/update")
     public String updateIngredient(@PathVariable String recipeId,
                                    @PathVariable String id,
-                                   Model model){
-        model.addAttribute("ingredient",ingredientService.findByRecipeIdAndIngredientId(
-                Long.valueOf(recipeId),Long.valueOf(id)));
+                                   Model model) {
+        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(
+                Long.valueOf(recipeId), Long.valueOf(id)));
 
-        model.addAttribute("uomList",unitOfMeasureService.findAll());
+        model.addAttribute("uomList", unitOfMeasureService.findAll());
 
         return "recipe/ingredient/ingredientform";
+    }
+
+    @RequestMapping("/recipe/{recipeId}/ingredient/{id}/delete")
+    public String deleteIngredientById(@PathVariable String recipeId,
+                                       @PathVariable String id) {
+
+        log.debug("deleting ingredient id:" + id);
+        ingredientService.deleteById(Long.valueOf(recipeId), Long.valueOf(id));
+
+        return "redirect:/recipe/" + recipeId + "/ingredients/";
+
     }
 
     @PostMapping("/recipe/{recipeId}/ingredient")
@@ -85,6 +95,6 @@ public class IngredientController {
         IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command);
         log.debug("saved recipe id:" + savedCommand.getRecipeId());
         log.debug("saved ingredient id:" + savedCommand.getId());
-        return "redirect:/recipe/" + savedCommand.getRecipeId()+"/ingredient/"+savedCommand.getId()+"/show";
+        return "redirect:/recipe/" + savedCommand.getRecipeId() + "/ingredient/" + savedCommand.getId() + "/show";
     }
 }

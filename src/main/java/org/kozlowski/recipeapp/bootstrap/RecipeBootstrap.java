@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +149,19 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         guacRecipe.getCategories().add(americanCategory);
         guacRecipe.getCategories().add(mexicanCategory);
 
+        try (FileInputStream fileInputStream = new FileInputStream("./src/main/resources/static/images/guacamole400x400.jpg")) {
+            byte[] bytes = fileInputStream.readAllBytes();
+            int i = 0;
+            Byte[] bytes1 = new Byte[bytes.length];
+            for (byte singleByte : bytes) {
+                bytes1[i++] = singleByte;
+
+            }
+            guacRecipe.setImage(bytes1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //add to return list
         recipes.add(guacRecipe);
 
@@ -205,7 +220,21 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(americanCategory);
         tacosRecipe.getCategories().add(mexicanCategory);
 
+        try (FileInputStream fileInputStream = new FileInputStream("./src/main/resources/static/images/tacos400x400.jpg")) {
+            byte[] bytes = fileInputStream.readAllBytes();
+            int i = 0;
+            Byte[] bytes1 = new Byte[bytes.length];
+            for (byte singleByte : bytes) {
+                bytes1[i++] = singleByte;
+
+            }
+            tacosRecipe.setImage(bytes1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         recipes.add(tacosRecipe);
         return recipes;
     }
+
+
 }
