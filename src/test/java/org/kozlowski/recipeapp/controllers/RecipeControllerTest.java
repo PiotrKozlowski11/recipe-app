@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
 import org.kozlowski.recipeapp.domain.Recipe;
+import org.kozlowski.recipeapp.exceptions.NotFoundException;
 import org.kozlowski.recipeapp.services.RecipeService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,7 +29,6 @@ class RecipeControllerTest {
     MockMvc mockMvc;
 
 
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -36,7 +36,7 @@ class RecipeControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
     }
 
-//    @Test
+    //    @Test
 //    void showById() throws Exception {
 //        Recipe recipe = new Recipe();
 //        recipe.setId(1L);
@@ -62,6 +62,16 @@ class RecipeControllerTest {
                 .andExpect(view().name("recipe/show"))
                 .andExpect(model().attributeExists("recipe"));
 
+    }
+
+    @Test
+    public void testGetRecipeNotFound() throws Exception {
+
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/1/show"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("404error"));
     }
 
     @Test
@@ -110,5 +120,14 @@ class RecipeControllerTest {
         mockMvc.perform(get("/recipe/1/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
+    }
+
+    @Test
+    void handleFormatException() throws Exception {
+        //when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/abc/show"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("400error"));
     }
 }
