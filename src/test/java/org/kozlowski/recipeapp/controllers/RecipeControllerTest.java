@@ -33,23 +33,11 @@ class RecipeControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         recipeController = new RecipeController(recipeService);
-        mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(recipeController)
+                .setControllerAdvice(new ControllerExceptionHandler())
+                .build();
     }
 
-    //    @Test
-//    void showById() throws Exception {
-//        Recipe recipe = new Recipe();
-//        recipe.setId(1L);
-//        when(recipeService.findById(anyLong())).thenReturn(recipe);
-//
-//        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
-//
-//        mockMvc.perform(get("/recipe/show/1"))
-//                .andExpect(status().isOk())
-//                .andExpect(view().name("recipe/show"))
-//                .andExpect(model().attributeExists("recipe"));
-//
-//    }
     @Test
     public void testGetRecipe() throws Exception {
 
