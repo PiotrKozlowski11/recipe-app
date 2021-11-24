@@ -5,6 +5,7 @@ import org.kozlowski.recipeapp.commands.RecipeCommand;
 import org.kozlowski.recipeapp.converters.RecipeCommandToRecipe;
 import org.kozlowski.recipeapp.converters.RecipeToRecipeCommand;
 import org.kozlowski.recipeapp.domain.Recipe;
+import org.kozlowski.recipeapp.exceptions.NotFoundException;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,8 @@ public class RecipeServiceImpl implements RecipeService {
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
 
         if (recipeOptional.isEmpty()) {
-            throw new RuntimeException("Recipe Not Found!");
+            //throw new RuntimeException("Recipe Not Found!");
+            throw new NotFoundException("Recipe Not Found!");
         }
 
         return recipeOptional.get();
