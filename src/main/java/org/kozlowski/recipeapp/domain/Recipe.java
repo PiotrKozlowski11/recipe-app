@@ -30,8 +30,7 @@ public class Recipe {
 
     @Lob
     private String directions;
-    //todo add
-    //private Difficulty difficulty;
+
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
     @ToString.Exclude

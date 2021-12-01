@@ -2,6 +2,7 @@ package org.kozlowski.recipeapp.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kozlowski.recipeapp.domain.Recipe;
+import org.kozlowski.recipeapp.exceptions.NotFoundException;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +48,7 @@ public class ImageServiceImpl implements ImageService {
 
         } else {
             log.error("Recipe for id :" + recipeOptional + " not found");
+            throw new NotFoundException("Recipe for id :" + recipeOptional + " not found");
         }
 
     }

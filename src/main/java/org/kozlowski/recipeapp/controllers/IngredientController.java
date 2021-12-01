@@ -4,15 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.kozlowski.recipeapp.commands.IngredientCommand;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
 import org.kozlowski.recipeapp.commands.UnitOfMeasureCommand;
+import org.kozlowski.recipeapp.exceptions.NotFoundException;
 import org.kozlowski.recipeapp.services.IngredientService;
 import org.kozlowski.recipeapp.services.RecipeService;
 import org.kozlowski.recipeapp.services.UnitOfMeasureService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 @Controller
@@ -52,7 +52,6 @@ public class IngredientController {
     public String newIngredient(@PathVariable String recipeId,
                             Model model){
         RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(recipeId));
-        //todo raise exception if null
 
         IngredientCommand ingredientCommand = new IngredientCommand();
         ingredientCommand.setRecipeId(recipeCommand.getId());
@@ -96,5 +95,21 @@ public class IngredientController {
         log.debug("saved recipe id:" + savedCommand.getRecipeId());
         log.debug("saved ingredient id:" + savedCommand.getId());
         return "redirect:/recipe/" + savedCommand.getRecipeId() + "/ingredient/" + savedCommand.getId() + "/show";
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ModelAndView handleNotFound(Exception exception) {
+
+        log.error("Handling not found exception");
+        log.error(exception.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.setViewName("404error");
+        modelAndView.addObject("exception", exception);
+
+
+        return modelAndView;
     }
 }

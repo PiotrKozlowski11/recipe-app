@@ -6,6 +6,7 @@ import org.kozlowski.recipeapp.converters.IngredientCommandToIngredient;
 import org.kozlowski.recipeapp.converters.IngredientToIngredientCommand;
 import org.kozlowski.recipeapp.domain.Ingredient;
 import org.kozlowski.recipeapp.domain.Recipe;
+import org.kozlowski.recipeapp.exceptions.NotFoundException;
 import org.kozlowski.recipeapp.repositories.RecipeRepository;
 import org.kozlowski.recipeapp.repositories.UnitOfMeasureRepository;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,9 @@ public class IngredientServiceImpl implements IngredientService {
     public IngredientCommand findByRecipeIdAndIngredientId(Long recipeId, Long ingredientId) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
 
-        if (recipeOptional.isEmpty()){
-            log.error("Recipe not found");
+        if (recipeOptional.isEmpty()) {
+            log.error("Ingredient service: Recipe Not Found for ID value:" + recipeId);
+            throw new NotFoundException("Recipe Not Found for ID value:" + recipeId);
         }
 
         Recipe recipe = recipeOptional.get();
@@ -47,8 +49,8 @@ public class IngredientServiceImpl implements IngredientService {
 
 
         if (optionalIngredientCommand.isEmpty()){
-            //todo
             log.error("Recipe not found");
+            throw new NotFoundException("Recipe not found for recipe id: " + recipe + " ingredient id: " + ingredientId);
         }
         return optionalIngredientCommand.get();
     }
@@ -58,14 +60,13 @@ public class IngredientServiceImpl implements IngredientService {
     public IngredientCommand saveIngredientCommand(IngredientCommand command) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(command.getRecipeId());
 
-        if(recipeOptional.isEmpty()){
+        if(recipeOptional.isEmpty()) {
 
-            //todo toss error if not found!
-            log.error("Recipe not found for id: " + command.getRecipeId());
-            return new IngredientCommand();
+            log.error("Ingredient command: Recipe not found for id: " + command.getRecipeId());
+            throw new NotFoundException("Ingredient command: Recipe not found for id: " + command.getRecipeId());
+            //return new IngredientCommand();
         } else {
             Recipe recipe = recipeOptional.get();
-            System.out.println("Command: "+command);
 
             Optional<Ingredient> ingredientOptional = recipe
                     .getIngredients()
@@ -79,7 +80,7 @@ public class IngredientServiceImpl implements IngredientService {
                 ingredientFound.setAmount(command.getAmount());
                 ingredientFound.setUnitOfMeasure(unitOfMeasureRepository
                         .findById(command.getUnitOfMeasure().getId())
-                        .orElseThrow(() -> new RuntimeException("UOM NOT FOUND"))); //todo address this
+                        .orElseThrow(() -> new NotFoundException("UOM NOT FOUND"))); //done address this
             } else {
                 //add new Ingredient
                 recipe.addIngredient(ingredientCommandToIngredient.convert(command));
@@ -101,7 +102,6 @@ public class IngredientServiceImpl implements IngredientService {
                         .findFirst();
             }
 
-            //to do check for fail
             return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
         }
 
