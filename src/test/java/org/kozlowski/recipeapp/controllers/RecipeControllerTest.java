@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
 import org.kozlowski.recipeapp.domain.Recipe;
 import org.kozlowski.recipeapp.exceptions.NotFoundException;
+import org.kozlowski.recipeapp.services.CategoryService;
 import org.kozlowski.recipeapp.services.RecipeService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,6 +25,9 @@ class RecipeControllerTest {
     @Mock
     RecipeService recipeService;
 
+    @Mock
+    CategoryService categoryService;
+
     RecipeController recipeController;
 
     MockMvc mockMvc;
@@ -32,7 +36,7 @@ class RecipeControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        recipeController = new RecipeController(recipeService);
+        recipeController = new RecipeController(recipeService, categoryService);
         mockMvc = MockMvcBuilders.standaloneSetup(recipeController)
                 .setControllerAdvice(new ControllerExceptionHandler())
                 .build();
@@ -68,7 +72,7 @@ class RecipeControllerTest {
         mockMvc.perform(get("/recipe/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/recipeform"))
-                .andExpect(model().attributeExists("recipe"));
+                .andExpect(model().attributeExists("recipe", "allCategories"));
 
     }
 

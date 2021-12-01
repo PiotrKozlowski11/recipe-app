@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.kozlowski.recipeapp.commands.RecipeCommand;
 import org.kozlowski.recipeapp.domain.Recipe;
 import org.kozlowski.recipeapp.exceptions.NotFoundException;
+import org.kozlowski.recipeapp.services.CategoryService;
 import org.kozlowski.recipeapp.services.RecipeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -19,9 +20,11 @@ import javax.validation.Valid;
 public class RecipeController {
     private static final String RECIPE_RECIPEFORM_URL = "recipe/recipeform";
     private final RecipeService recipeService;
+    private final CategoryService categoryService;
 
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService, CategoryService categoryService) {
         this.recipeService = recipeService;
+        this.categoryService = categoryService;
     }
 
     @RequestMapping("/recipe/{id}/show")
@@ -34,8 +37,10 @@ public class RecipeController {
 
     @RequestMapping("/recipe/new")
     public String newRecipe(Model model) {
+
+
         model.addAttribute("recipe", new RecipeCommand());
-        System.out.println("New Recipe");
+        model.addAttribute("allCategories", categoryService.findAllCommand());
 
         return RECIPE_RECIPEFORM_URL;
     }
@@ -49,7 +54,11 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe")
-    public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult result) {
+    public String saveOrUpdate(@Valid
+                               @ModelAttribute("recipe") RecipeCommand command, BindingResult result) {
+
+        System.out.println(command.getDescription());
+        command.getCategories().forEach(System.out::println);
 
         if (result.hasErrors()) {
             result.getAllErrors().forEach(objectError -> log.debug(objectError.toString()));
